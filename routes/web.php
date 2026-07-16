@@ -3,6 +3,7 @@
 use App\Http\Controllers\AcceptInvitationController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuditController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\MemberController;
@@ -20,7 +21,7 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware(['auth', EnsureEmailVerifiedOrSuperAdmin::class, EnsureActiveMember::class])->group(function () {
-    Route::inertia('dashboard', 'dashboard')->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
     Route::get('members/{member}', [MemberController::class, 'show'])->name('members.show');
     Route::patch('members/{member}', [MemberController::class, 'update'])->name('members.update');
 

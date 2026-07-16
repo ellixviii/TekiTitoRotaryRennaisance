@@ -29,6 +29,19 @@ class DashboardTest extends TestCase
             ->where('auth.user.is_admin', false));
     }
 
+    public function test_dashboard_exposes_interactive_personal_metrics(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->get(route('dashboard', ['days' => 30]))
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('dashboard')
+                ->where('days', 30)
+                ->where('stats.0.label', 'My service hours')
+                ->where('stats.1.label', 'My attendance')
+                ->has('manilaTime'));
+    }
+
     public function test_administrator_role_is_shared_with_the_frontend(): void
     {
         Role::findOrCreate('Club Administrator');

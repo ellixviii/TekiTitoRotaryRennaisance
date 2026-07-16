@@ -9,7 +9,7 @@ export default function AuthSimpleLayout({
 }: AuthLayoutProps) {
     return (
         <div className="flex min-h-svh flex-col items-center justify-center bg-slate-50 p-6 md:p-10">
-            <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-xl shadow-slate-900/5">
+            <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/5 sm:p-8">
                 <div className="flex flex-col gap-8">
                     <div className="flex flex-col items-center gap-4">
                         <Link
@@ -19,7 +19,7 @@ export default function AuthSimpleLayout({
                             <img
                                 src="/brand/signin-logo.png"
                                 alt="Rotary Club of Taytay Renaissance — Create Lasting Impact"
-                                className="h-auto max-h-32 w-full object-contain"
+                                className="block h-auto w-full object-contain"
                             />
                             <span className="sr-only">{title}</span>
                         </Link>

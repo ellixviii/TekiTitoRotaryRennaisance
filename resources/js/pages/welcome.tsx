@@ -8,13 +8,13 @@ export default function Welcome() {
         <>
             <Head title="Welcome" />
             <main className="flex min-h-screen items-center justify-center bg-slate-50 p-6">
-                <section className="w-full max-w-3xl rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-xl shadow-slate-900/5 md:p-14">
+                <section className="w-full max-w-4xl rounded-3xl border border-slate-200 bg-white p-6 text-center shadow-xl shadow-slate-900/5 sm:p-10 md:p-14">
                     <img
-                        src="/brand/signin-logo.jfif"
-                        alt="Rotary Club of Taytay Renaissance"
-                        className="mx-auto h-52 w-full object-contain"
+                        src="/brand/signin-logo.png"
+                        alt="Rotary Club of Taytay Renaissance — Create Lasting Impact"
+                        className="mx-auto block h-auto w-full object-contain"
                     />
-                    <h1 className="mt-6 text-3xl font-semibold text-[#17458f]">
+                    <h1 className="mt-10 text-3xl font-semibold text-[#17458f]">
                         Organization Management System
                     </h1>
                     <p className="mx-auto mt-3 max-w-xl text-slate-600">
