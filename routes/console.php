@@ -33,6 +33,7 @@ Artisan::command('app:create-admin', function () {
         'password' => Hash::make($credentials['password']),
     ]);
     $user->forceFill(['email_verified_at' => now()])->save();
+    $user->memberProfile()->create();
 
     Role::findOrCreate('Super Administrator');
     $user->assignRole('Super Administrator');

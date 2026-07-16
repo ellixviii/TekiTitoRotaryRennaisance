@@ -5,6 +5,10 @@ export type User = {
     avatar?: string;
     email_verified_at: string | null;
     is_admin: boolean;
+    can_manage_members: boolean;
+    can_view_finance: boolean;
+    can_view_operations: boolean;
+    can_view_audit: boolean;
     /* @chisel-2fa */
     two_factor_enabled?: boolean;
     /* @end-chisel-2fa */

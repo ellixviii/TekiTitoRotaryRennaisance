@@ -22,6 +22,7 @@ class CreateAdminCommandTest extends TestCase
         $user = User::where('email', 'admin@example.com')->firstOrFail();
 
         $this->assertNotNull($user->email_verified_at);
+        $this->assertNotNull($user->memberProfile);
         $this->assertTrue($user->hasRole('Super Administrator'));
         $this->assertNotSame('Strong-Admin-2026!', $user->password);
     }

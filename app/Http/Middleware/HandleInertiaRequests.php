@@ -41,7 +41,11 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => fn () => $request->user() ? [
                     ...$request->user()->only('id', 'name', 'email', 'email_verified_at', 'created_at', 'updated_at'),
-                    'is_admin' => $request->user()->hasAnyRole(['Super Administrator', 'Club Administrator']),
+                    'is_admin' => $request->user()->hasAnyRole(['Super Administrator', 'Club Administrator', 'Treasurer', 'Finance Approver', 'Secretary', 'Project Chair', 'Read-only Auditor']),
+                    'can_manage_members' => $request->user()->can('manage-members'),
+                    'can_view_finance' => $request->user()->can('view-finance'),
+                    'can_view_operations' => $request->user()->can('view-operations'),
+                    'can_view_audit' => $request->user()->can('view-audit'),
                     'two_factor_enabled' => ! is_null($request->user()->two_factor_confirmed_at),
                 ] : null,
             ],

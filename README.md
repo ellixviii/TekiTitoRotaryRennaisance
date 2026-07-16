@@ -2,7 +2,7 @@
 
 Secure organization management system for the Rotary Club of Taytay Renaissance.
 
-This initial build includes Laravel Fortify authentication, TOTP two-factor authentication, passkeys, invitation-only account policy, role-based admin/member layouts, and Rotary/TekiTito branding. Member, finance, project, attendance, award, and meeting workflows are planned in subsequent releases.
+The completed build includes secure invitation-only membership, role-based administration, member self-service and exports, double-entry finance with approval/posting/reversals and income statements, project Kanban assignments, manual and RFID/NFC attendance, printable nameplates, awards and categories, meetings with agendas and minutes, assets, payables, receivables, reminders, CSV exports, and an append-only audit console.
 
 ## Technology
 
@@ -11,6 +11,7 @@ This initial build includes Laravel Fortify authentication, TOTP two-factor auth
 - Tailwind CSS 4 and shadcn/ui components
 - Spatie Laravel Permission
 - SQLite for local development; PostgreSQL is planned for production
+- Asia/Manila application timezone for timestamps, invitations, reports, and scheduled work
 
 ## Requirements
 
@@ -56,10 +57,10 @@ php artisan app:create-admin
 Start the local application:
 
 ```powershell
-php artisan serve
+php artisan serve --host=127.0.0.1 --port=8890
 ```
 
-Open <http://127.0.0.1:8000>.
+Open <http://127.0.0.1:8890>. Port `8890` is the standard local application port; Vite development assets use port `5180`.
 
 If PHP reports a missing extension, find the loaded configuration with `php --ini`, enable the required `extension=` entry in `php.ini`, and restart PowerShell.
 
@@ -93,22 +94,24 @@ php artisan app:create-admin
 Start the local application:
 
 ```bash
-php artisan serve
+php artisan serve --host=127.0.0.1 --port=8890
 ```
 
-Open <http://127.0.0.1:8000>.
+Open <http://127.0.0.1:8890>. Port `8890` is the standard local application port; Vite development assets use port `5180`.
 
 ## Development mode
 
 After the one-time setup, run the Laravel server and Vite development server in separate terminals:
 
 ```bash
-php artisan serve
+php artisan serve --host=127.0.0.1 --port=8890
 ```
 
 ```bash
 npm run dev
 ```
+
+Invitation emails use the mail settings in `.env`. Local development writes them to `storage/logs/laravel.log` by default. Configure an SMTP provider before inviting real members in a deployed environment.
 
 ## Verification
 
@@ -123,8 +126,10 @@ npm run build
 
 - Public registration is disabled. Create only the initial administrator with `php artisan app:create-admin`; later accounts will use the invitation workflow.
 - Never commit `.env`, database files, production exports, member data, credentials, or encryption keys.
+- Keep `APP_TIMEZONE=Asia/Manila` in every deployed environment so user-facing and stored application timestamps remain consistent.
 - SQLite is intended only for local development. Production deployment will use PostgreSQL, HTTPS, managed secrets, private file storage, and tested encrypted backups.
 - Enable two-factor authentication immediately for privileged accounts.
+- Have the club accountant approve the chart of accounts, fiscal year, approval thresholds, and Philippine reporting obligations before entering production financial data. The seeded accounts are development defaults only.
 
 ## License
 
