@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\AccountingPeriod;
 use App\Models\FinancialAccount;
+use App\Models\RotaryYear;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
@@ -48,6 +49,12 @@ class DatabaseSeeder extends Seeder
         AccountingPeriod::updateOrCreate(
             ['name' => 'Fiscal Year '.now()->year],
             ['starts_on' => now()->startOfYear()->toDateString(), 'ends_on' => now()->endOfYear()->toDateString()],
+        );
+
+        $startYear = now()->month >= 7 ? now()->year : now()->year - 1;
+        RotaryYear::updateOrCreate(
+            ['name' => $startYear.'–'.($startYear + 1)],
+            ['starts_on' => "{$startYear}-07-01", 'ends_on' => ($startYear + 1).'-06-30'],
         );
     }
 }

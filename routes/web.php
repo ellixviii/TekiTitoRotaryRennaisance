@@ -6,6 +6,7 @@ use App\Http\Controllers\AuditController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\MissionController;
 use App\Http\Controllers\OperationsController;
 use App\Http\Middleware\EnsureActiveMember;
 use Illuminate\Support\Facades\Route;
@@ -58,6 +59,18 @@ Route::middleware(['auth', 'verified', EnsureActiveMember::class])->group(functi
         });
     });
     Route::get('audit', AuditController::class)->middleware('can:view-audit')->name('audit.index');
+    Route::middleware(['can:view-operations'])->group(function () {
+        Route::get('mission', [MissionController::class, 'index'])->name('mission.index');
+        Route::middleware('can:manage-operations')->group(function () {
+            Route::post('mission/years', [MissionController::class, 'year'])->name('mission.years.store');
+            Route::patch('mission/years/{year}/archive', [MissionController::class, 'archive'])->name('mission.years.archive');
+            Route::patch('mission/projects/{project}', [MissionController::class, 'outcome'])->name('mission.projects.outcome');
+            Route::post('mission/service-hours', [MissionController::class, 'service'])->name('mission.service.store');
+            Route::post('mission/assignments', [MissionController::class, 'assignment'])->name('mission.assignments.store');
+            Route::post('mission/onboarding', [MissionController::class, 'onboarding'])->name('mission.onboarding.store');
+            Route::patch('mission/onboarding/{item}', [MissionController::class, 'completeOnboarding'])->name('mission.onboarding.toggle');
+        });
+    });
 });
 
 require __DIR__.'/settings.php';

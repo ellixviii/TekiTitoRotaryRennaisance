@@ -74,6 +74,7 @@ class JournalService
                 'party_name' => $journal->party_name,
                 'member_id' => $journal->member_id,
                 'bank_id' => $journal->bank_id,
+                'project_id' => $journal->project_id,
                 'description' => "Reversal of {$journal->reference}: {$journal->description}",
                 'reversal_of_id' => $journal->id,
             ], $journal->lines->map(fn ($line) => [

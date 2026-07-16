@@ -7,6 +7,7 @@ import {
     Landmark,
     ClipboardList,
     ScrollText,
+    HeartHandshake,
     Users,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
@@ -36,6 +37,7 @@ const mainNavItems: NavItem[] = [
     { title: 'Members', href: members.index(), icon: Users },
     { title: 'Finance', href: finance.index(), icon: Landmark },
     { title: 'Projects', href: '/operations/projects', icon: FolderKanban },
+    { title: 'Mission', href: '/mission', icon: HeartHandshake },
     { title: 'Attendance', href: '/attendance', icon: CalendarDays },
     { title: 'Awards', href: '/operations/awards', icon: Award },
     { title: 'Meetings', href: '/operations/meetings', icon: ClipboardList },
@@ -57,6 +59,7 @@ export function AppSidebar() {
             (item.title !== 'Audit' || auth.user.can_view_audit) &&
             (![
                 'Projects',
+                'Mission',
                 'Attendance',
                 'Awards',
                 'Meetings',

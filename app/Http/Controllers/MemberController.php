@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\AuditEvent;
+use App\Models\JournalEntry;
+use App\Models\OperationRecord;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -47,6 +49,8 @@ class MemberController extends Controller
         return Inertia::render('members/show', [
             'member' => $member,
             'canManage' => Gate::allows('manage-members'),
+            'transactions' => JournalEntry::where('member_id', $member->id)->whereIn('status', ['posted', 'reversed'])->with('lines')->latest('entry_date')->get(),
+            'outstanding' => OperationRecord::whereIn('module', ['receivables', 'payables'])->where('assigned_to', $member->id)->whereNotIn('status', ['paid', 'cancelled'])->get(),
         ]);
     }
 

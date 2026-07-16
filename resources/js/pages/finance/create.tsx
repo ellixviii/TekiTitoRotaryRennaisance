@@ -8,14 +8,17 @@ import finance from '@/routes/finance';
 type Account = { id: number; code: string; name: string; type: string };
 type Bank = { id: number; name: string; account_name: string };
 type Member = { id: number; name: string };
+type Project = { id: number; title: string };
 export default function FinanceCreate({
     accounts,
     banks,
     members,
+    projects,
 }: {
     accounts: Account[];
     banks: Bank[];
     members: Member[];
+    projects: Project[];
 }) {
     return (
         <>
@@ -89,6 +92,18 @@ export default function FinanceCreate({
                                 name="party_name"
                                 error={errors.party_name}
                             />
+                            <SelectField
+                                label="Service project"
+                                name="project_id"
+                                error={errors.project_id}
+                            >
+                                <option value="">Not project-related</option>
+                                {projects.map((project) => (
+                                    <option key={project.id} value={project.id}>
+                                        {project.title}
+                                    </option>
+                                ))}
+                            </SelectField>
                             <SelectField
                                 label="Debit account"
                                 name="debit_account_id"

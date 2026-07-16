@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /** @property int $id @property string $reference @property string $status @property string $description @property int $prepared_by */
 class JournalEntry extends Model
 {
-    protected $fillable = ['reference', 'entry_date', 'type', 'document_number', 'party_name', 'member_id', 'bank_id', 'description', 'status', 'prepared_by', 'approved_by', 'approved_at', 'posted_at', 'reversal_of_id'];
+    protected $fillable = ['reference', 'entry_date', 'type', 'document_number', 'party_name', 'member_id', 'bank_id', 'project_id', 'description', 'status', 'prepared_by', 'approved_by', 'approved_at', 'posted_at', 'reversal_of_id'];
 
     protected function casts(): array
     {

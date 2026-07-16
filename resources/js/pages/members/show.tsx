@@ -51,6 +51,22 @@ type Member = {
     roles: { id: number; name: string }[];
     member_profile: Profile;
 };
+type Transaction = {
+    id: number;
+    reference: string;
+    entry_date: string;
+    type: string;
+    description: string;
+    status: string;
+    lines: { debit: string; credit: string }[];
+};
+type Outstanding = {
+    id: number;
+    module: string;
+    title: string;
+    amount: string | null;
+    status: string;
+};
 
 const tabs = [
     { id: 'transactions', label: 'Transactions', icon: ReceiptText },
@@ -62,9 +78,13 @@ const tabs = [
 export default function MemberShow({
     member,
     canManage,
+    transactions,
+    outstanding,
 }: {
     member: Member;
     canManage: boolean;
+    transactions: Transaction[];
+    outstanding: Outstanding[];
 }) {
     const [editing, setEditing] = useState(false);
     const [activeTab, setActiveTab] = useState('transactions');
@@ -198,9 +218,16 @@ export default function MemberShow({
                         </div>
                     </div>
                     <div className="p-6 md:p-8">
-                        <EmptyTab
-                            tab={tabs.find((tab) => tab.id === activeTab)!}
-                        />
+                        {activeTab === 'transactions' ? (
+                            <Transactions
+                                transactions={transactions}
+                                outstanding={outstanding}
+                            />
+                        ) : (
+                            <EmptyTab
+                                tab={tabs.find((tab) => tab.id === activeTab)!}
+                            />
+                        )}
                     </div>
                 </section>
             </div>
@@ -382,6 +409,96 @@ function StatusBadge({ status }: { status: string }) {
         >
             {status}
         </span>
+    );
+}
+
+function Transactions({
+    transactions,
+    outstanding,
+}: {
+    transactions: Transaction[];
+    outstanding: Outstanding[];
+}) {
+    return (
+        <div className="space-y-6">
+            <div>
+                <h3 className="mb-3 font-semibold">Outstanding obligations</h3>
+                {outstanding.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">
+                        No outstanding payables or receivables.
+                    </p>
+                ) : (
+                    <div className="grid gap-2">
+                        {outstanding.map((item) => (
+                            <div
+                                key={item.id}
+                                className="flex justify-between rounded border p-3"
+                            >
+                                <span>
+                                    {item.title}{' '}
+                                    <small className="capitalize">
+                                        ({item.module})
+                                    </small>
+                                </span>
+                                <strong>
+                                    ₱
+                                    {Number(item.amount || 0).toLocaleString(
+                                        'en-PH',
+                                        { minimumFractionDigits: 2 },
+                                    )}
+                                </strong>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+            <div>
+                <h3 className="mb-3 font-semibold">Posted payment history</h3>
+                {transactions.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">
+                        No posted member transactions.
+                    </p>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr>
+                                    <th className="p-2 text-left">Date</th>
+                                    <th className="p-2 text-left">Reference</th>
+                                    <th className="p-2 text-left">
+                                        Description
+                                    </th>
+                                    <th className="p-2 text-right">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {transactions.map((t) => (
+                                    <tr key={t.id} className="border-t">
+                                        <td className="p-2">
+                                            {t.entry_date.slice(0, 10)}
+                                        </td>
+                                        <td className="p-2">{t.reference}</td>
+                                        <td className="p-2">{t.description}</td>
+                                        <td className="p-2 text-right">
+                                            ₱
+                                            {t.lines
+                                                .reduce(
+                                                    (sum, l) =>
+                                                        sum + Number(l.debit),
+                                                    0,
+                                                )
+                                                .toLocaleString('en-PH', {
+                                                    minimumFractionDigits: 2,
+                                                })}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
+        </div>
     );
 }
 

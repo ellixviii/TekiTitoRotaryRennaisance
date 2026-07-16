@@ -2,7 +2,7 @@
 
 Secure organization management system for the Rotary Club of Taytay Renaissance.
 
-The completed build includes secure invitation-only membership, role-based administration, member self-service and exports, double-entry finance with approval/posting/reversals and income statements, project Kanban assignments, manual and RFID/NFC attendance, printable nameplates, awards and categories, meetings with agendas and minutes, assets, payables, receivables, reminders, CSV exports, and an append-only audit console.
+The completed build includes secure invitation-only membership, role-based administration, member self-service and statements, double-entry finance with project-linked transactions, approval/posting/reversals and income statements, project Kanban assignments, measurable service outcomes, volunteer hours, cost-per-beneficiary reporting, Rotary-year archives and printable handover packets, officer and committee responsibilities, mentored onboarding, transparent engagement indicators, manual and RFID/NFC attendance, printable nameplates, awards, meetings with agendas and minutes, assets, payables, receivables, reminders, CSV exports, and an append-only audit console.
 
 ## Technology
 
@@ -101,7 +101,24 @@ Open <http://127.0.0.1:8890>. Port `8890` is the standard local application port
 
 ## Development mode
 
-After the one-time setup, run the Laravel server and Vite development server in separate terminals:
+After the one-time setup, start both Laravel and Vite in the background on Windows:
+
+```powershell
+.\scripts\dev.ps1 start
+.\scripts\dev.ps1 restart
+.\scripts\dev.ps1 stop
+```
+
+On macOS or Linux:
+
+```bash
+chmod +x scripts/dev.sh
+./scripts/dev.sh start
+./scripts/dev.sh restart
+./scripts/dev.sh stop
+```
+
+Logs are written to `storage/logs/backend.log` and `storage/logs/frontend.log`. To run the services manually in separate terminals instead:
 
 ```bash
 php artisan serve --host=127.0.0.1 --port=8890
@@ -130,6 +147,8 @@ npm run build
 - SQLite is intended only for local development. Production deployment will use PostgreSQL, HTTPS, managed secrets, private file storage, and tested encrypted backups.
 - Enable two-factor authentication immediately for privileged accounts.
 - Have the club accountant approve the chart of accounts, fiscal year, approval thresholds, and Philippine reporting obligations before entering production financial data. The seeded accounts are development defaults only.
+- Engagement indicators expose their exact inputs and are intended only as prompts for personal outreach, never automated judgments about members.
+- AI, cloud transcription, OCR, and chatbot services are intentionally excluded so member and financial data are not sent to model providers and club operations do not depend on GPU infrastructure.
 
 ## License
 

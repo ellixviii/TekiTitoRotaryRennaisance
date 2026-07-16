@@ -6,6 +6,7 @@ use App\Models\AuditEvent;
 use App\Models\Bank;
 use App\Models\FinancialAccount;
 use App\Models\JournalEntry;
+use App\Models\OperationRecord;
 use App\Models\User;
 use App\Services\JournalService;
 use Illuminate\Http\RedirectResponse;
@@ -37,6 +38,7 @@ class FinanceController extends Controller
             'accounts' => FinancialAccount::where('active', true)->orderBy('code')->get(['id', 'code', 'name', 'type']),
             'banks' => Bank::where('active', true)->orderBy('name')->get(['id', 'name', 'account_name']),
             'members' => User::orderBy('name')->get(['id', 'name']),
+            'projects' => OperationRecord::where('module', 'projects')->orderBy('title')->get(['id', 'title']),
         ]);
     }
 
@@ -49,6 +51,7 @@ class FinanceController extends Controller
             'party_name' => ['nullable', 'string', 'max:255', 'required_without:member_id'],
             'member_id' => ['nullable', 'exists:users,id'],
             'bank_id' => ['nullable', 'exists:banks,id'],
+            'project_id' => ['nullable', Rule::exists('operation_records', 'id')->where('module', 'projects')],
             'description' => ['required', 'string', 'max:2000'],
             'amount' => ['required', 'decimal:0,2', 'gt:0', 'max:999999999999.99'],
             'debit_account_id' => ['required', 'exists:financial_accounts,id', 'different:credit_account_id'],
@@ -62,6 +65,7 @@ class FinanceController extends Controller
             'party_name' => $validated['party_name'] ?? null,
             'member_id' => $validated['member_id'] ?? null,
             'bank_id' => $validated['bank_id'] ?? null,
+            'project_id' => $validated['project_id'] ?? null,
             'description' => $validated['description'],
         ];
 
