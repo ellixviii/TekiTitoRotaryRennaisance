@@ -74,6 +74,19 @@ class FinanceTest extends TestCase
         $service->post($journal);
     }
 
+    public function test_treasurer_can_administer_finance_and_download_pdf_report(): void
+    {
+        $treasurer = $this->userWithRole('Treasurer');
+
+        $this->actingAs($treasurer)->post(route('finance.accounts.store'), ['code' => '5000', 'name' => 'Club supplies', 'type' => 'expense'])->assertRedirect();
+        $this->actingAs($treasurer)->post(route('finance.banks.store'), ['name' => 'Club Bank', 'account_name' => 'Rotary Club', 'account_number' => '123456'])->assertRedirect();
+        $response = $this->actingAs($treasurer)->get(route('finance.income-statement.pdf'));
+
+        $response->assertOk()->assertHeader('content-type', 'application/pdf');
+        $this->assertDatabaseHas('financial_accounts', ['code' => '5000']);
+        $this->assertDatabaseHas('audit_events', ['action' => 'finance.income-statement-pdf']);
+    }
+
     private function journal(User $preparer): JournalEntry
     {
         return app(JournalService::class)->create($this->entry(), [

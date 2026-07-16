@@ -162,8 +162,8 @@ RFID/NFC identifies an attendance record only; it is not an authentication crede
 
 ### Meetings, awards, and records
 
-- **Meetings:** enter the agenda in the description, record minutes in notes, and print the completed record.
-- **Awards:** record categories, responsible members, event dates, and recognition status.
+- **Meetings:** create the meeting, open it to add ordered agenda items, then record discussion, decisions, action owners, and due dates. Print the structured minutes from the meeting page.
+- **Awards:** define reusable categories and record member or guest recipients, linked events, dates, and citations.
 - **Assets, Payables, Receivables, and Reminders:** record amounts, owners, dates, notes, and lifecycle status; export each module to CSV.
 
 ### Audit
@@ -185,6 +185,12 @@ php artisan optimize:clear
 
 Restart the services and run the verification commands below. Never use `migrate:fresh` on an installation containing real data.
 
+## Production deployment and recovery
+
+Start from `.env.production.example`, keep the real `.env` outside source control, use PostgreSQL and HTTPS, and configure a supervised queue worker and scheduler. Deploy from a reviewed release with `scripts/deploy.ps1` on Windows Server or `scripts/deploy.sh` on macOS/Linux. The health endpoint is `/up`.
+
+Before every deployment, set a strong `BACKUP_PASSPHRASE` in the process environment and run `scripts/backup.ps1` or `scripts/backup.sh`. The backup contains the database and encryption key material, is encrypted with AES-256-CBC/PBKDF2, and includes a SHA-256 checksum. Copy both generated files from `storage/app/backups` to restricted off-site storage. Test a restore quarterly on an isolated machine: verify the checksum, decrypt with OpenSSL, restore PostgreSQL with `pg_restore` (or replace the SQLite file), restore `.env`, run migrations, and verify `/up`, sign-in, a member profile, and a financial report. Never overwrite production while testing recovery.
+
 ## Verification
 
 ```bash
@@ -193,6 +199,8 @@ npm run types:check
 npm run lint:check
 npm run format:check
 npm run build
+npx playwright install chromium
+npm run test:e2e
 ```
 
 ## Security notes

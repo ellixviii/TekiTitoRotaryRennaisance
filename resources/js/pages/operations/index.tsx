@@ -1,4 +1,4 @@
-import { Form, Head, router } from '@inertiajs/react';
+import { Form, Head, Link, router } from '@inertiajs/react';
 import { Download, Plus, Printer, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -215,7 +215,18 @@ function Card({
         <article className="rounded-xl border bg-card p-4 shadow-sm">
             <div className="flex justify-between gap-3">
                 <div>
-                    <h3 className="font-semibold">{item.title}</h3>
+                    <h3 className="font-semibold">
+                        {module === 'meetings' ? (
+                            <Link
+                                className="text-[#17458f] hover:underline"
+                                href={`/meetings/${item.id}`}
+                            >
+                                {item.title}
+                            </Link>
+                        ) : (
+                            item.title
+                        )}
+                    </h3>
                     <p className="text-xs text-muted-foreground">
                         {item.category || 'Uncategorized'} ·{' '}
                         {item.assignee?.name || 'Unassigned'}{' '}

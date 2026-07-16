@@ -24,8 +24,8 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
-import members from '@/routes/members';
 import finance from '@/routes/finance';
+import members from '@/routes/members';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
@@ -39,7 +39,7 @@ const mainNavItems: NavItem[] = [
     { title: 'Projects', href: '/operations/projects', icon: FolderKanban },
     { title: 'Mission', href: '/mission', icon: HeartHandshake },
     { title: 'Attendance', href: '/attendance', icon: CalendarDays },
-    { title: 'Awards', href: '/operations/awards', icon: Award },
+    { title: 'Awards', href: '/awards', icon: Award },
     { title: 'Meetings', href: '/operations/meetings', icon: ClipboardList },
     { title: 'Assets', href: '/operations/assets', icon: Landmark },
     { title: 'Payables', href: '/operations/payables', icon: Landmark },
@@ -76,8 +76,16 @@ export function AppSidebar() {
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
+                        <SidebarMenuButton
+                            size="lg"
+                            className="h-auto min-h-24 flex-col justify-center gap-2 px-3 py-3 group-data-[collapsible=icon]:min-h-8! group-data-[collapsible=icon]:p-0!"
+                            asChild
+                        >
+                            <Link
+                                href={dashboard()}
+                                prefetch
+                                title="Rotary Club of Taytay Renaissance"
+                            >
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

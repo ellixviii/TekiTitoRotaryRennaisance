@@ -3,6 +3,7 @@ import {
     Award,
     Bell,
     CalendarCheck,
+    Download,
     Edit3,
     Mail,
     MapPin,
@@ -67,6 +68,32 @@ type Outstanding = {
     amount: string | null;
     status: string;
 };
+type Attendance = {
+    id: number;
+    time_in: string;
+    time_out: string | null;
+    event: { title: string };
+};
+type AwardRecord = {
+    id: number;
+    award_name: string;
+    awarded_on: string;
+    citation: string | null;
+    category: { name: string };
+};
+type Reminder = {
+    id: number;
+    title: string;
+    starts_at: string | null;
+    status: string;
+    notes: string | null;
+};
+type MemberCard = {
+    id: number;
+    label: string | null;
+    created_at: string;
+    revoked_at: string | null;
+};
 
 const tabs = [
     { id: 'transactions', label: 'Transactions', icon: ReceiptText },
@@ -80,14 +107,23 @@ export default function MemberShow({
     canManage,
     transactions,
     outstanding,
+    attendance,
+    awards,
+    reminders,
+    cards,
 }: {
     member: Member;
     canManage: boolean;
     transactions: Transaction[];
     outstanding: Outstanding[];
+    attendance: Attendance[];
+    awards: AwardRecord[];
+    reminders: Reminder[];
+    cards: MemberCard[];
 }) {
     const [editing, setEditing] = useState(false);
     const [activeTab, setActiveTab] = useState('transactions');
+    const [cardId, setCardId] = useState('');
     const initials = useInitials();
     const form = useForm({
         name: member.name,
@@ -144,6 +180,16 @@ export default function MemberShow({
                         >
                             <Edit3 />
                         </Button>
+                        <Button
+                            size="icon"
+                            variant="outline"
+                            asChild
+                            aria-label="Export personal data"
+                        >
+                            <a href={`/members/${member.id}/export`}>
+                                <Download />
+                            </a>
+                        </Button>
                     </div>
                     <div className="mt-4 flex flex-wrap gap-2">
                         <StatusBadge status={member.member_profile.status} />
@@ -174,6 +220,68 @@ export default function MemberShow({
                             value={member.member_profile.membership_number}
                         />
                     </dl>
+                    {canManage && (
+                        <div className="mt-6 border-t pt-5">
+                            <h2 className="text-sm font-semibold">
+                                RFID/NFC cards
+                            </h2>
+                            <div className="mt-2 flex gap-2">
+                                <Input
+                                    value={cardId}
+                                    onChange={(e) => setCardId(e.target.value)}
+                                    placeholder="Tap card to register"
+                                />
+                                <Button
+                                    onClick={() =>
+                                        router.post(
+                                            `/members/${member.id}/cards`,
+                                            { card_id: cardId },
+                                            {
+                                                preserveScroll: true,
+                                                onSuccess: () => setCardId(''),
+                                            },
+                                        )
+                                    }
+                                    disabled={!cardId}
+                                >
+                                    Add
+                                </Button>
+                            </div>
+                            <div className="mt-2 space-y-1">
+                                {cards.map((card) => (
+                                    <div
+                                        key={card.id}
+                                        className="flex items-center justify-between text-xs"
+                                    >
+                                        <span>
+                                            {card.label || `Card #${card.id}`} ·{' '}
+                                            {card.revoked_at
+                                                ? 'Revoked'
+                                                : 'Active'}
+                                        </span>
+                                        {!card.revoked_at && (
+                                            <button
+                                                className="text-destructive"
+                                                onClick={() =>
+                                                    confirm(
+                                                        'Revoke this card?',
+                                                    ) &&
+                                                    router.delete(
+                                                        `/members/${member.id}/cards/${card.id}`,
+                                                        {
+                                                            preserveScroll: true,
+                                                        },
+                                                    )
+                                                }
+                                            >
+                                                Revoke
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                     {canManage && (
                         <div className="mt-6 border-t pt-5">
                             <p className="mb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
@@ -223,9 +331,32 @@ export default function MemberShow({
                                 transactions={transactions}
                                 outstanding={outstanding}
                             />
+                        ) : activeTab === 'attendance' ? (
+                            <RecordList
+                                empty="No attendance recorded."
+                                items={attendance.map((item) => ({
+                                    id: item.id,
+                                    title: item.event.title,
+                                    detail: `In ${new Date(item.time_in).toLocaleString('en-PH')} · Out ${item.time_out ? new Date(item.time_out).toLocaleString('en-PH') : '—'}`,
+                                }))}
+                            />
+                        ) : activeTab === 'awards' ? (
+                            <RecordList
+                                empty="No awards recorded."
+                                items={awards.map((item) => ({
+                                    id: item.id,
+                                    title: item.award_name,
+                                    detail: `${item.category.name} · ${new Date(item.awarded_on).toLocaleDateString('en-PH')}${item.citation ? ` · ${item.citation}` : ''}`,
+                                }))}
+                            />
                         ) : (
-                            <EmptyTab
-                                tab={tabs.find((tab) => tab.id === activeTab)!}
+                            <RecordList
+                                empty="No reminders assigned."
+                                items={reminders.map((item) => ({
+                                    id: item.id,
+                                    title: item.title,
+                                    detail: `${item.starts_at ? new Date(item.starts_at).toLocaleString('en-PH') : 'No date'} · ${item.status}`,
+                                }))}
                             />
                         )}
                     </div>
@@ -502,21 +633,27 @@ function Transactions({
     );
 }
 
-function EmptyTab({ tab }: { tab: (typeof tabs)[number] }) {
-    const Icon = tab.icon;
-
-    return (
-        <div className="flex min-h-72 flex-col items-center justify-center text-center">
-            <span className="flex size-14 items-center justify-center rounded-full bg-[#17458f]/10 text-[#17458f]">
-                <Icon />
-            </span>
-            <h2 className="mt-4 font-semibold">
-                No {tab.label.toLowerCase()} yet
-            </h2>
-            <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-                This tab is ready to receive records from its corresponding
-                module in the next build phases.
-            </p>
+function RecordList({
+    items,
+    empty,
+}: {
+    items: { id: number; title: string; detail: string }[];
+    empty: string;
+}) {
+    return items.length === 0 ? (
+        <p className="py-16 text-center text-sm text-muted-foreground">
+            {empty}
+        </p>
+    ) : (
+        <div className="divide-y rounded-lg border">
+            {items.map((item) => (
+                <div key={item.id} className="p-4">
+                    <h3 className="font-medium">{item.title}</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                        {item.detail}
+                    </p>
+                </div>
+            ))}
         </div>
     );
 }

@@ -3,9 +3,13 @@
 use App\Http\Controllers\AcceptInvitationController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuditController;
+use App\Http\Controllers\AwardController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FinanceAdminController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\MeetingController;
+use App\Http\Controllers\MemberCardController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\MissionController;
 use App\Http\Controllers\OperationsController;
@@ -24,12 +28,19 @@ Route::middleware(['auth', EnsureEmailVerifiedOrSuperAdmin::class, EnsureActiveM
     Route::get('dashboard', DashboardController::class)->name('dashboard');
     Route::get('members/{member}', [MemberController::class, 'show'])->name('members.show');
     Route::patch('members/{member}', [MemberController::class, 'update'])->name('members.update');
+    Route::get('members/{member}/export', [MemberController::class, 'exportMember'])->name('members.personal-export');
 
     Route::middleware('can:view-finance')->prefix('finance')->name('finance.')->group(function () {
         Route::get('/', [FinanceController::class, 'index'])->name('index');
         Route::get('income-statement', [FinanceController::class, 'incomeStatement'])->name('income-statement');
+        Route::get('income-statement.pdf', [FinanceAdminController::class, 'incomeStatementPdf'])->name('income-statement.pdf');
         Route::get('journals/{journal}', [FinanceController::class, 'show'])->name('show');
         Route::middleware('can:create-finance')->group(function () {
+            Route::get('administration', [FinanceAdminController::class, 'index'])->name('admin');
+            Route::post('administration/banks', [FinanceAdminController::class, 'bank'])->name('banks.store');
+            Route::post('administration/accounts', [FinanceAdminController::class, 'account'])->name('accounts.store');
+            Route::post('administration/periods', [FinanceAdminController::class, 'period'])->name('periods.store');
+            Route::patch('administration/periods/{period}', [FinanceAdminController::class, 'togglePeriod'])->name('periods.toggle');
             Route::get('entries/create', [FinanceController::class, 'create'])->name('create');
             Route::post('entries', [FinanceController::class, 'store'])->name('store');
             Route::post('journals/{journal}/submit', [FinanceController::class, 'submit'])->name('submit');
@@ -44,12 +55,20 @@ Route::middleware(['auth', EnsureEmailVerifiedOrSuperAdmin::class, EnsureActiveM
         Route::post('invitations', [InvitationController::class, 'store'])->name('invitations.create');
         Route::patch('members/{member}/status', [MemberController::class, 'status'])->name('members.status');
         Route::get('members-export', [MemberController::class, 'export'])->name('members.export');
+        Route::post('members/{member}/cards', [MemberCardController::class, 'store'])->name('members.cards.store');
+        Route::delete('members/{member}/cards/{card}', [MemberCardController::class, 'destroy'])->name('members.cards.destroy');
     });
 
     Route::middleware('can:view-operations')->group(function () {
+        Route::get('awards', [AwardController::class, 'index'])->name('awards.index');
+        Route::get('meetings/{meeting}', [MeetingController::class, 'show'])->name('meetings.show');
         Route::get('operations/{module}', [OperationsController::class, 'index'])->name('operations.index');
         Route::get('operations/{module}/export', [OperationsController::class, 'export'])->name('operations.export');
         Route::middleware('can:manage-operations')->group(function () {
+            Route::post('awards/categories', [AwardController::class, 'category'])->name('awards.categories.store');
+            Route::post('awards', [AwardController::class, 'store'])->name('awards.store');
+            Route::post('meetings/{meeting}/agenda', [MeetingController::class, 'store'])->name('meetings.agenda.store');
+            Route::patch('meetings/{meeting}/agenda/{item}', [MeetingController::class, 'update'])->name('meetings.agenda.update');
             Route::post('operations/{module}', [OperationsController::class, 'store'])->name('operations.store');
             Route::patch('operations/{module}/{record}', [OperationsController::class, 'update'])->name('operations.update');
             Route::delete('operations/{module}/{record}', [OperationsController::class, 'destroy'])->name('operations.destroy');

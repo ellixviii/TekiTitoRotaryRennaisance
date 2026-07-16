@@ -4,16 +4,11 @@ export default function AppLogo() {
             <img
                 src="/brand/sidebar-logo.jfif"
                 alt="Rotary Club of Taytay Renaissance"
-                className="h-10 w-10 rounded-md bg-white object-cover object-left"
+                className="h-auto w-full max-w-48 bg-white object-contain group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:object-cover group-data-[collapsible=icon]:object-[78%_center]"
             />
-            <div className="ml-2 grid flex-1 text-left text-sm">
-                <span className="mb-0.5 truncate leading-tight font-semibold">
-                    Rotary Renaissance
-                </span>
-                <span className="truncate text-xs text-muted-foreground">
-                    Organization System
-                </span>
-            </div>
+            <span className="text-xs font-medium tracking-wide text-muted-foreground group-data-[collapsible=icon]:hidden">
+                Organization Management System
+            </span>
         </>
     );
 }

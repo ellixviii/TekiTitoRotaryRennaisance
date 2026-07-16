@@ -1,6 +1,8 @@
 /.phpunit.cache
 /bootstrap/ssr
 /node_modules
+/playwright-report
+/test-results
 /public/build
 /public/fonts-manifest.dev.json
 /public/hot

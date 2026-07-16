@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AttendanceEntry;
 use App\Models\AuditEvent;
+use App\Models\MemberCard;
 use App\Models\OperationRecord;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -40,11 +41,17 @@ class AttendanceController extends Controller
         abort_unless($event->module === 'attendance', 404);
         $data = $request->validate(['member_id' => ['nullable', 'exists:users,id', 'required_without_all:guest_name,card_id'], 'guest_name' => ['nullable', 'string', 'max:255', 'required_without_all:member_id,card_id'], 'card_id' => ['nullable', 'string', 'max:255', 'required_without_all:member_id,guest_name']]);
         $cardHash = isset($data['card_id']) ? hash_hmac('sha256', $data['card_id'], config('app.key')) : null;
+        $registeredCard = $cardHash ? MemberCard::where('card_hash', $cardHash)->whereNull('revoked_at')->first() : null;
+        abort_if($cardHash && ! $registeredCard, 422, 'This RFID/NFC card is not registered to a member.');
+        if ($registeredCard) {
+            $data['member_id'] = $registeredCard->member_id;
+            unset($data['guest_name']);
+        }
         $entry = AttendanceEntry::where('event_id', $event->id)->whereNull('time_out')->when($data['member_id'] ?? null, fn ($q, $id) => $q->where('member_id', $id))->when($cardHash, fn ($q) => $q->where('card_hash', $cardHash))->when($data['guest_name'] ?? null, fn ($q, $name) => $q->where('guest_name', $name))->latest()->first();
         if ($entry) {
             $entry->update(['time_out' => now()]);
         } else {
-            $entry = AttendanceEntry::create(['event_id' => $event->id, 'member_id' => $data['member_id'] ?? null, 'guest_name' => $data['guest_name'] ?? ($cardHash ? 'RFID/NFC guest' : null), 'card_hash' => $cardHash, 'time_in' => now(), 'recorded_by' => $request->user()->id]);
+            $entry = AttendanceEntry::create(['event_id' => $event->id, 'member_id' => $data['member_id'] ?? null, 'guest_name' => $data['guest_name'] ?? null, 'card_hash' => $cardHash, 'time_in' => now(), 'recorded_by' => $request->user()->id]);
         }
         AuditEvent::record($request, $entry->time_out ? 'attendance.time_out' : 'attendance.time_in', $entry);
 

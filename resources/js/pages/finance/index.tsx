@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { BarChart3, Plus } from 'lucide-react';
+import { BarChart3, Plus, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import finance from '@/routes/finance';
 
@@ -43,11 +43,18 @@ export default function FinanceIndex({
                             </Link>
                         </Button>
                         {canCreate && (
-                            <Button asChild>
-                                <Link href={finance.create()}>
-                                    <Plus /> New entry
-                                </Link>
-                            </Button>
+                            <>
+                                <Button variant="outline" asChild>
+                                    <Link href="/finance/administration">
+                                        <Settings /> Administration
+                                    </Link>
+                                </Button>
+                                <Button asChild>
+                                    <Link href={finance.create()}>
+                                        <Plus /> New entry
+                                    </Link>
+                                </Button>
+                            </>
                         )}
                     </div>
                 </div>

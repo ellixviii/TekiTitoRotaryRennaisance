@@ -108,6 +108,16 @@ class MemberManagementTest extends TestCase
         $this->actingAs($member)->get(route('dashboard'))->assertForbidden();
     }
 
+    public function test_member_can_export_own_record_but_not_another_members_record(): void
+    {
+        $member = $this->member();
+        $other = $this->member('private@example.com');
+
+        $this->actingAs($member)->get(route('members.personal-export', $member))->assertOk()->assertDownload("member-{$member->id}-export.csv");
+        $this->actingAs($member)->get(route('members.personal-export', $other))->assertForbidden();
+        $this->assertDatabaseHas('audit_events', ['action' => 'member.personal-exported', 'actor_id' => $member->id]);
+    }
+
     private function admin(): User
     {
         Role::findOrCreate('Club Administrator');

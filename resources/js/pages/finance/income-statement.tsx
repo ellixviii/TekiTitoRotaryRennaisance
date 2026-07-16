@@ -1,4 +1,5 @@
 import { Head, router } from '@inertiajs/react';
+import { Download } from 'lucide-react';
 import type { FormEvent } from 'react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -71,6 +72,13 @@ export default function IncomeStatement({
                         />
                     </div>
                     <Button type="submit">Apply</Button>
+                    <Button variant="outline" asChild>
+                        <a
+                            href={`/finance/income-statement.pdf?from=${start}&to=${end}`}
+                        >
+                            <Download /> Download PDF
+                        </a>
+                    </Button>
                 </form>
                 <div className="rounded-2xl border bg-card p-6 shadow-sm">
                     <Section
