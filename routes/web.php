@@ -9,6 +9,7 @@ use App\Http\Controllers\MemberController;
 use App\Http\Controllers\MissionController;
 use App\Http\Controllers\OperationsController;
 use App\Http\Middleware\EnsureActiveMember;
+use App\Http\Middleware\EnsureEmailVerifiedOrSuperAdmin;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
@@ -18,7 +19,7 @@ Route::middleware('guest')->group(function () {
     Route::post('invitations/{token}', [AcceptInvitationController::class, 'store'])->middleware('throttle:10,1')->name('invitations.store');
 });
 
-Route::middleware(['auth', 'verified', EnsureActiveMember::class])->group(function () {
+Route::middleware(['auth', EnsureEmailVerifiedOrSuperAdmin::class, EnsureActiveMember::class])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
     Route::get('members/{member}', [MemberController::class, 'show'])->name('members.show');
     Route::patch('members/{member}', [MemberController::class, 'update'])->name('members.update');

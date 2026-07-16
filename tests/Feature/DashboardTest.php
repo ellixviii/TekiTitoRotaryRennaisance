@@ -40,4 +40,22 @@ class DashboardTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page
                 ->where('auth.user.is_admin', true));
     }
+
+    public function test_unverified_super_administrator_bypasses_email_verification(): void
+    {
+        Role::findOrCreate('Super Administrator');
+        $user = User::factory()->unverified()->create();
+        $user->assignRole('Super Administrator');
+
+        $this->actingAs($user)->get(route('dashboard'))->assertOk();
+    }
+
+    public function test_unverified_regular_member_still_requires_email_verification(): void
+    {
+        Role::findOrCreate('Member');
+        $user = User::factory()->unverified()->create();
+        $user->assignRole('Member');
+
+        $this->actingAs($user)->get(route('dashboard'))->assertRedirect(route('verification.notice'));
+    }
 }

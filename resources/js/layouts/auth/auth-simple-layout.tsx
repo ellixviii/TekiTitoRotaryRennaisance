@@ -17,9 +17,9 @@ export default function AuthSimpleLayout({
                             className="flex w-full flex-col items-center gap-2 font-medium"
                         >
                             <img
-                                src="/brand/signin-logo.jfif"
-                                alt="Rotary Club of Taytay Renaissance"
-                                className="h-32 w-full object-contain"
+                                src="/brand/signin-logo.png"
+                                alt="Rotary Club of Taytay Renaissance — Create Lasting Impact"
+                                className="h-auto max-h-32 w-full object-contain"
                             />
                             <span className="sr-only">{title}</span>
                         </Link>
